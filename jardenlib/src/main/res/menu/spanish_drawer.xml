@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/menuTop"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/learnMode"
+            android:icon="@drawable/ic_school_black_24dp"
+            android:title="@string/learnMode"/>
+    </group>
+    <group
+        android:id="@+id/menuSecond"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/topicMode"
+            android:icon="@drawable/ic_storage_black_24dp"
+            android:title="@string/selectTopic"/>
+        <item
+            android:id="@+id/practiceMode"
+            android:icon="@drawable/ic_fitness_center_black_24dp"
+            android:title="@string/practiceMode"/>
+        <item
+            android:id="@+id/qaStyle"
+            android:icon="@drawable/qastyle"
+            android:title="@string/qaStyle"/>
+    </group>
+    <group
+        android:id="@+id/menuThird"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/audioMode"
+            android:icon="@drawable/ic_volume_up_black_24dp"
+            android:title="@string/audioMode" />
+        <item
+            android:id="@+id/wordLookup"
+            android:icon="@drawable/ic_search_black_24dp"
+            android:title="@string/wordLookup"/>
+        <item
+            android:id="@+id/numbersGame"
+            android:icon="@drawable/ic_casino_black_24dp"
+            android:title="@string/numbersGame"/>
+        <item
+            android:id="@+id/exit"
+            android:icon="@drawable/ic_close_black_24dp"
+            android:title="@string/exit"/>
+    </group>
+
+</menu>
