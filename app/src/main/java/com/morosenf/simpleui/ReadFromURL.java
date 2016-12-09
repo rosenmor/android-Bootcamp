@@ -1,9 +1,11 @@
 package com.morosenf.simpleui;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,27 +13,45 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
-import jarden.quiz.EndOfQuestionsException;
-import jarden.quiz.PresetQuiz;
 
 
 /**
  * Created by morosenf on 12/6/2016.
  */
 
-public class ReadFromURL extends AsyncTask <String, Void, Properties >{
 
-    PresetQuiz presetQuiz;
-    TextView questionTextView;
+interface ResultsListener {
+    void setProperties(InputStream inputStream);
+}
+
+public class ReadFromURL extends AsyncTask <String, Void, InputStream >{
+
+    private final ResultsListener resultsListener;
+
+    public ReadFromURL(ResultsListener resultsListener) {
+        this.resultsListener = resultsListener;
+    }
+
 
     @Override
-    protected Properties doInBackground(String... strings) {
+    protected InputStream doInBackground(String... strings) {
         URL spanishURL = null;
+
         try {
             spanishURL = new URL(strings[0]);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+
+        /*if (ContextCompat.checkSelfPermission(MainActivity.class,
+                Manifest.permission.INTERNET)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(MainActivity.class,
+                    new String[]{Manifest.permission.INTERNET},
+                    1);
+        }*/
+
         InputStream inputStream = null;
         try {
             inputStream = spanishURL.openStream();
@@ -39,33 +59,13 @@ public class ReadFromURL extends AsyncTask <String, Void, Properties >{
             e.printStackTrace();
         }
 
-        Properties spanishProps = new Properties();
-        try {
-            spanishProps.load(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return spanishProps;
+        return inputStream;
     }
 
     @Override
-    protected void onPostExecute(Properties properties) {
-        super.onPostExecute(properties);
+    protected void onPostExecute(InputStream inputStream) {
+        super.onPostExecute(inputStream);
+        this.resultsListener.setProperties(inputStream);
 
-               try {
-            presetQuiz = new PresetQuiz(properties);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String question = null;
-
-                try {
-            question = presetQuiz.getNextQuestion(MainActivity.level);
-        } catch (EndOfQuestionsException e) {
-            Log.e("my first app", e.toString());
-            questionTextView.setText(e.toString());
-        }
-        questionTextView.setText(question);
     }
 }

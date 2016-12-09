@@ -26,19 +26,36 @@ import jarden.quiz.EndOfQuestionsException;
 import jarden.quiz.PresetQuiz;
 import jarden.quiz.Quiz;
 
-import static com.morosenf.simpleui.R.string.level;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener , ResultsListener {
 
     private EditText answerEditTex;
-    public TextView resultTextView;
+    private TextView resultTextView;
     public TextView questionTextView;
     private Button goButton;
     private Quiz quiz;
     private PresetQuiz presetQuiz;
     private String levelStr;
-    public static int level;
+    private static int level;
     private String question = null;
+
+    @Override
+    public void setProperties(InputStream inputStream) {
+        try {
+            presetQuiz = new PresetQuiz(inputStream,"iso-8859-1");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            question = presetQuiz.getNextQuestion(level);
+        } catch (EndOfQuestionsException e) {
+            Log.e("my first app", e.toString());
+            questionTextView.setText(e.toString());
+        }
+        questionTextView.setText(question);
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,32 +72,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //questionTextView.setText("7 * 6 ?");
         quiz = new ArithmeticQuiz();
 
-        // Here, thisActivity is the current activity
-        /*if (ContextCompat.checkSelfPermission(this,
+
+        if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.INTERNET)
                 != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.INTERNET},
-                        1);
-            }*/
+                    new String[]{Manifest.permission.INTERNET},
+                    1);
+        }
 
         String serverUrlStr = "https://sites.google.com/site/amazequiz/home/problems/spanish.txt?attredirects=0&d=1";
 
-        new ReadFromURL().execute(serverUrlStr);
-
-
-       /* try {
-            presetQuiz = new PresetQuiz(spanishProps);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            question = presetQuiz.getNextQuestion(level);
-        } catch (EndOfQuestionsException e) {
-            Log.e("my first app", e.toString());
-            questionTextView.setText(e.toString());
-        }*/
+        new ReadFromURL(this).execute(serverUrlStr);
 
 
         //InputStream inputStream = getResources().openRawResource(R.raw.capitals);
@@ -113,12 +117,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-        questionTextView.setText(question);
+        //questionTextView.setText(question);
 
         goButton.setOnClickListener(this);
-
-
-
 
     }
 
@@ -141,10 +142,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             resultTextView.setText( answer + " is wrong !");
         }
 
-
-        levelStr =  ((EditText)findViewById(R.id.levelEditText)).getText().toString();
-        level=Integer.parseInt(levelStr);
-
         try {
             //question = quiz.getNextQuestion(level);
             question = presetQuiz.getNextQuestion(level);
@@ -156,4 +153,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         answerEditTex.setText("");
 
     }
+
+
 }
